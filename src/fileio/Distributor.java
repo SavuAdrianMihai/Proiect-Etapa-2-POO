@@ -2,8 +2,8 @@ package fileio;
 
 import filesinteractions.Input;
 import formulas.Formulas;
-import sorts.ProducerSorts;
 import strategies.EnergyChoiceStrategyType;
+import strategypattern.*;
 import updates.CostsChanges;
 
 import java.util.ArrayList;
@@ -113,23 +113,31 @@ public class Distributor implements DistributorInterface {
         isBankrupt = bankrupt;
     }
 
-    public long getEnergyNeededKW() {
+    public final long getEnergyNeededKW() {
         return energyNeededKW;
     }
 
-    public EnergyChoiceStrategyType getProducerStrategy() {
+    public final long getEnergyNeededCurrently() {
+        return energyNeededCurrently;
+    }
+
+    public final void setEnergyNeededCurrently(long energyNeededCurrently) {
+        this.energyNeededCurrently = energyNeededCurrently;
+    }
+
+    public final EnergyChoiceStrategyType getProducerStrategy() {
         return producerStrategy;
     }
 
-    public long getContractCost() {
+    public final long getContractCost() {
         return contractCost;
     }
 
-    public void setContractCost(long contractCost) {
+    public final void setContractCost(long contractCost) {
         this.contractCost = contractCost;
     }
 
-    public ArrayList<Producer> getProducers() {
+    public final ArrayList<Producer> getProducers() {
         return producers;
     }
 
@@ -192,60 +200,11 @@ public class Distributor implements DistributorInterface {
      * Distributor method that searches for a producer/producers
      */
     public final void searchProducer(Input input) {
-        ProducerSorts producerSorts = new ProducerSorts();
-        for (int i = 0; i < input.getProducersData().size(); i++) {
-            if (this.energyNeededCurrently == 0) {
-                return;
-            }
-            if (input.getProducersData().get(i).getMaxDistributor()
-                    == input.getProducersData().get(i).getDistributors().size()) {
-                i++;
-            }
-            producerSorts.sortProducerGreen(input);
-            if (input.getProducersData().get(i).getEnergyType().isRenewable()
-                    && getProducerStrategy().toString().equals("GREEN")) {
-                this.getProducers().add(input.getProducersData().get(i));
-                if (this.energyNeededCurrently < input.getProducersData().get(i).
-                        getEnergyPerDistributor()) {
-                    this.energyNeededCurrently = 0;
-                } else {
-                    this.energyNeededCurrently -= input.getProducersData().get(i).
-                            getEnergyPerDistributor();
-                }
-                addDistributorToProducer(input.getProducersData().get(i));
-            } else if (getProducerStrategy().toString().equals("PRICE")) {
-                producerSorts.sortProducerPrice(input);
-                this.getProducers().add(input.getProducersData().get(i));
-                if (this.energyNeededCurrently < input.getProducersData().get(i).
-                        getEnergyPerDistributor()) {
-                    this.energyNeededCurrently = 0;
-                } else {
-                    this.energyNeededCurrently -= input.getProducersData().get(i).
-                            getEnergyPerDistributor();
-                }
-                addDistributorToProducer(input.getProducersData().get(i));
-            } else if (getProducerStrategy().toString().equals("QUANTITY")) {
-                producerSorts.sortProducerQuantity(input);
-                this.getProducers().add(input.getProducersData().get(i));
-                if (this.energyNeededCurrently < input.getProducersData().get(i).
-                        getEnergyPerDistributor()) {
-                    this.energyNeededCurrently = 0;
-                } else {
-                    this.energyNeededCurrently -= input.getProducersData().get(i).
-                            getEnergyPerDistributor();
-                }
-                addDistributorToProducer(input.getProducersData().get(i));
-            } else {
-                this.getProducers().add(input.getProducersData().get(i));
-                addDistributorToProducer(input.getProducersData().get(i));
-                if (this.energyNeededCurrently < input.getProducersData().get(i).
-                        getEnergyPerDistributor()) {
-                    this.energyNeededCurrently = 0;
-                } else {
-                    this.energyNeededCurrently -= input.getProducersData().get(i).
-                            getEnergyPerDistributor();
-                }
-            }
+        switch (getProducerStrategy().toString()) {
+            case "GREEN" -> new GreenStrategy().searchProducer(input, this);
+            case "PRICE" -> new PriceStrategy().searchProducer(input, this);
+            case "QUANTITY" -> new QuantityStrategy().searchProducer(input, this);
+            default -> new BasicStrategy().searchProducer(input, this);
         }
     }
 }

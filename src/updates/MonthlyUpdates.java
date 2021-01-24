@@ -8,12 +8,10 @@ public class MonthlyUpdates {
 
     private final ArrayList<Consumer> newConsumers;
     private final ArrayList<CostsChanges> costsChanges;
-    private final ArrayList<EnergyPerDistributorChanges> energyPerDistributorChanges;
 
     public MonthlyUpdates() {
         newConsumers = new ArrayList<>();
         costsChanges = new ArrayList<>();
-        energyPerDistributorChanges = new ArrayList<>();
     }
 
     public final ArrayList<Consumer> getNewConsumers() {
@@ -22,9 +20,5 @@ public class MonthlyUpdates {
 
     public final ArrayList<CostsChanges> getCostsChanges() {
         return costsChanges;
-    }
-
-    public ArrayList<EnergyPerDistributorChanges> getEnergyPerDistributorChanges() {
-        return energyPerDistributorChanges;
     }
 }

@@ -1,7 +1,6 @@
 package fileio;
 
 import entities.EnergyType;
-import updates.EnergyPerDistributorChanges;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,9 +11,9 @@ public class Producer {
     private final EnergyType energyType;
     private final long maxDistributor;
     private final double priceKW;
-    private long energyPerDistributor;
     private final ArrayList<Distributor> currentDistributors;
     private final HashMap<Integer, ArrayList<Distributor>> distributors;
+    private long energyPerDistributor;
 
     public Producer(long id, EnergyType energyType, long maxDistributor, double priceKW, long
             energyPerDistributor) {
@@ -27,53 +26,41 @@ public class Producer {
         this.distributors = new HashMap<>();
     }
 
-    public long getId() {
+    public final long getId() {
         return id;
     }
 
-    public EnergyType getEnergyType() {
+    public final EnergyType getEnergyType() {
         return energyType;
     }
 
-    public long getMaxDistributor() {
+    public final long getMaxDistributor() {
         return maxDistributor;
     }
 
-    public double getPriceKW() {
+    public final double getPriceKW() {
         return priceKW;
     }
 
-    public long getEnergyPerDistributor() {
+    public final long getEnergyPerDistributor() {
         return energyPerDistributor;
     }
 
-    public void setEnergyPerDistributor(long energyPerDistributor) {
+    public final void setEnergyPerDistributor(long energyPerDistributor) {
         this.energyPerDistributor = energyPerDistributor;
     }
 
-    public ArrayList<Distributor> getCurrentDistributors() {
+    public final ArrayList<Distributor> getCurrentDistributors() {
         return currentDistributors;
     }
 
-    public Map<Integer, ArrayList<Distributor>> getDistributors() {
+    public final Map<Integer, ArrayList<Distributor>> getDistributors() {
         return distributors;
     }
 
-    public final void changeEnergyPerDistributor(final ArrayList<EnergyPerDistributorChanges>
-                                                         changes) {
-        for (EnergyPerDistributorChanges change : changes) {
-            if (change.getId() == this.getId()) {
-                setEnergyPerDistributor(change.getEnergyPerDistributor());
-            }
-        }
-    }
-
-    public final void removeDisributor(final Distributor distributor) {
-        if (this.getCurrentDistributors() != null) {
-            this.getCurrentDistributors().remove(distributor);
-        }
-    }
-
+    /**
+     * adds distributor to producer's database by month
+     */
     public final void addCurrentDistributorsToArchive(int month) {
         getDistributors().put(month - 1, getCurrentDistributors());
     }

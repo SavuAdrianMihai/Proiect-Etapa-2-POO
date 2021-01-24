@@ -23,14 +23,10 @@ public final class Main {
      * Main function which reads the input file and starts simulation
      *
      * @param args input and output files
-     * @throws Exception might error when reading/writing/opening files, parsing JSON
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         String inputFilePath = args[0];
-
-        //String inputFilePath = "checker/resources/in/basic_3.json";
         InputLoader inputLoader = new InputLoader(inputFilePath);
-
         Input input = inputLoader.readData();
 
         // Initial round
@@ -107,7 +103,6 @@ public final class Main {
 
         // write in output file
         String outputFilePath = args[1];
-        //String outputFilePath = "results.out";
         Writer writer = new Writer();
         writer.writeFile(outputFilePath, input);
     }

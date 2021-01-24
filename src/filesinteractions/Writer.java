@@ -44,13 +44,8 @@ public class Writer {
         for (Producer producer : input.getProducersData()) {
             List<LinkedHashMap<String, Object>> listMonthlyStats = new ArrayList<>();
             LinkedHashMap<String, Object> mapProducers = new LinkedHashMap<>();
-            printEntities.printProducers(producer, mapProducers, input);
+            printEntities.printProducers(producer, mapProducers);
 
-            /*
-            LinkedHashMap<String, Object> mapMonthlyStats = new LinkedHashMap<>();
-            printEntities.printMonthlyStats(producer, mapMonthlyStats, input);
-            listMonthlyStats.add(mapMonthlyStats);
-*/
             if (producer.getDistributors() != null) {
                 for (int i = 0; i < input.getNumberOfTurns(); i++) {
                     LinkedHashMap<String, Object> mapMonthlyStats = new LinkedHashMap<>();

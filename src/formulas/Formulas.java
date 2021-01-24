@@ -52,8 +52,8 @@ public class Formulas {
     public long cost(final Distributor distributor) {
         long sum = 0;
         for (int i = 0; i < distributor.getProducers().size(); i++) {
-            sum += distributor.getProducers().get(i).getEnergyPerDistributor() *
-                    distributor.getProducers().get(i).getPriceKW();
+            sum += distributor.getProducers().get(i).getEnergyPerDistributor()
+                    * distributor.getProducers().get(i).getPriceKW();
         }
         return sum;
     }
