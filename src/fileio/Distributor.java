@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Distributor implements DistributorInterface {
     private final long id;
     private final long contractLength;
-    private final long contractCost;
+    private long contractCost;
     private long initialBudget;
     private long initialInfrastructureCost;
     private long initialProductionCost;
@@ -19,6 +19,7 @@ public class Distributor implements DistributorInterface {
     private ArrayList<Consumer> consumers;
     private ArrayList<Consumer> pastDueConsumers;
     private long energyNeededKW;
+    private long energyNeededCurrently;
     private EnergyChoiceStrategyType producerStrategy;
     private ArrayList<Producer> producers;
     private boolean isBankrupt;
@@ -31,6 +32,7 @@ public class Distributor implements DistributorInterface {
         initialInfrastructureCost = 0;
         initialProductionCost = 0;
         previousNumberOfConsumers = 0;
+        energyNeededCurrently = 0;
     }
 
     public Distributor(long id, long contractLength, long initialBudget,
@@ -42,6 +44,7 @@ public class Distributor implements DistributorInterface {
         this.initialBudget = initialBudget;
         this.initialInfrastructureCost = initialInfrastructureCost;
         this.energyNeededKW = energyNeededKW;
+        this.energyNeededCurrently = energyNeededKW;
         this.producerStrategy = producerStrategy;
         this.previousNumberOfConsumers = 0;
         this.consumers = new ArrayList<>();
@@ -122,6 +125,10 @@ public class Distributor implements DistributorInterface {
         return contractCost;
     }
 
+    public void setContractCost(long contractCost) {
+        this.contractCost = contractCost;
+    }
+
     public ArrayList<Producer> getProducers() {
         return producers;
     }
@@ -173,49 +180,72 @@ public class Distributor implements DistributorInterface {
         setInitialBudget(getInitialBudget() - formulas.monthlySpendings(this));
     }
 
-    public final void
+    /**
+     * Distributor method that adds current distributor to a producer's list of active distribuitor
+     * clients
+     */
+    public final void addDistributorToProducer(Producer producer) {
+        producer.getCurrentDistributors().add(this);
+    }
 
-    public final void searchProducer(Input input){
+    /**
+     * Distributor method that searches for a producer/producers
+     */
+    public final void searchProducer(Input input) {
         ProducerSorts producerSorts = new ProducerSorts();
-        long electricityNeededKW = this.getEnergyNeededKW();
-        for(int i = 0; i < input.getProducersData().size(); i++) {
-            if (electricityNeededKW == 0) {
+        for (int i = 0; i < input.getProducersData().size(); i++) {
+            if (this.energyNeededCurrently == 0) {
                 return;
             }
+            if (input.getProducersData().get(i).getMaxDistributor()
+                    == input.getProducersData().get(i).getDistributors().size()) {
+                i++;
+            }
             producerSorts.sortProducerGreen(input);
-            if (input.getProducersData().get(i).getEnergyType().toString().equals("GREEN")) {
+            if (input.getProducersData().get(i).getEnergyType().isRenewable()
+                    && getProducerStrategy().toString().equals("GREEN")) {
                 this.getProducers().add(input.getProducersData().get(i));
-                if (electricityNeededKW < input.getProducersData().get(i).getEnergyPerDistributor())
-                    electricityNeededKW = 0;
-                else electricityNeededKW -= input.getProducersData().get(i).
-                        getEnergyPerDistributor();
-            }
-
-            else if (input.getProducersData().get(i).getEnergyType().toString().equals("PRICE")) {
+                if (this.energyNeededCurrently < input.getProducersData().get(i).
+                        getEnergyPerDistributor()) {
+                    this.energyNeededCurrently = 0;
+                } else {
+                    this.energyNeededCurrently -= input.getProducersData().get(i).
+                            getEnergyPerDistributor();
+                }
+                addDistributorToProducer(input.getProducersData().get(i));
+            } else if (getProducerStrategy().toString().equals("PRICE")) {
+                producerSorts.sortProducerPrice(input);
                 this.getProducers().add(input.getProducersData().get(i));
-                if (electricityNeededKW < input.getProducersData().get(i).getEnergyPerDistributor())
-                    electricityNeededKW = 0;
-                else electricityNeededKW -= input.getProducersData().get(i).
-                        getEnergyPerDistributor();
-            }
-
-            else if (input.getProducersData().get(i).getEnergyType().toString().
-                    equals("QUANTITY")) {
+                if (this.energyNeededCurrently < input.getProducersData().get(i).
+                        getEnergyPerDistributor()) {
+                    this.energyNeededCurrently = 0;
+                } else {
+                    this.energyNeededCurrently -= input.getProducersData().get(i).
+                            getEnergyPerDistributor();
+                }
+                addDistributorToProducer(input.getProducersData().get(i));
+            } else if (getProducerStrategy().toString().equals("QUANTITY")) {
+                producerSorts.sortProducerQuantity(input);
                 this.getProducers().add(input.getProducersData().get(i));
-                if (electricityNeededKW < input.getProducersData().get(i).getEnergyPerDistributor())
-                    electricityNeededKW = 0;
-                else electricityNeededKW -= input.getProducersData().get(i).
-                        getEnergyPerDistributor();
-            }
-            else {
+                if (this.energyNeededCurrently < input.getProducersData().get(i).
+                        getEnergyPerDistributor()) {
+                    this.energyNeededCurrently = 0;
+                } else {
+                    this.energyNeededCurrently -= input.getProducersData().get(i).
+                            getEnergyPerDistributor();
+                }
+                addDistributorToProducer(input.getProducersData().get(i));
+            } else {
                 this.getProducers().add(input.getProducersData().get(i));
-                if (electricityNeededKW < input.getProducersData().get(i).getEnergyPerDistributor())
-                    electricityNeededKW = 0;
-                else electricityNeededKW -= input.getProducersData().get(i).
-                        getEnergyPerDistributor();
+                addDistributorToProducer(input.getProducersData().get(i));
+                if (this.energyNeededCurrently < input.getProducersData().get(i).
+                        getEnergyPerDistributor()) {
+                    this.energyNeededCurrently = 0;
+                } else {
+                    this.energyNeededCurrently -= input.getProducersData().get(i).
+                            getEnergyPerDistributor();
+                }
             }
         }
-
-
     }
 }

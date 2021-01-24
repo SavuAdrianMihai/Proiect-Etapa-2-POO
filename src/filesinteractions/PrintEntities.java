@@ -4,6 +4,7 @@ import fileio.Consumer;
 import fileio.Distributor;
 import fileio.Producer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class PrintEntities {
@@ -54,8 +55,18 @@ public class PrintEntities {
 
          */
         map.put("month", month);
-        map.put("distributorsIds", producer.getDistributors().get(month));
+        // map.put("distributorsIds", producer.getDistributors().get(month - 1));
 
+        //map.put("month", month);
+        //Distributor distribuitorsIds;
+        //distribuitorsIds = producer.getCurrentDistributors().get(month - 1);
+        //distribuitorsIds.add(producer.getCurrentDistributors().get(0));
+
+        ArrayList<Integer> distributorsIds = new ArrayList<>();
+        for (int i = 0; i < producer.getDistributors().get(month - 1).size(); i++) {
+            distributorsIds.add((int) producer.getDistributors().get(month - 1).get(i).getId());
+        }
+        map.put("distributorsIds", distributorsIds);
     }
 
     /**

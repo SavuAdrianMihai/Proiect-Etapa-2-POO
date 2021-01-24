@@ -4,6 +4,7 @@ import entities.EnergyType;
 import updates.EnergyPerDistributorChanges;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Producer {
@@ -12,15 +13,18 @@ public class Producer {
     private final long maxDistributor;
     private final double priceKW;
     private long energyPerDistributor;
-    private Map<Integer, Distributor> distributors;
+    private final ArrayList<Distributor> currentDistributors;
+    private final HashMap<Integer, ArrayList<Distributor>> distributors;
 
     public Producer(long id, EnergyType energyType, long maxDistributor, double priceKW, long
-                    energyPerDistributor) {
+            energyPerDistributor) {
         this.id = id;
         this.energyType = energyType;
         this.maxDistributor = maxDistributor;
         this.priceKW = priceKW;
         this.energyPerDistributor = energyPerDistributor;
+        this.currentDistributors = new ArrayList<>();
+        this.distributors = new HashMap<>();
     }
 
     public long getId() {
@@ -47,7 +51,11 @@ public class Producer {
         this.energyPerDistributor = energyPerDistributor;
     }
 
-    public Map<Integer, Distributor> getDistributors() {
+    public ArrayList<Distributor> getCurrentDistributors() {
+        return currentDistributors;
+    }
+
+    public Map<Integer, ArrayList<Distributor>> getDistributors() {
         return distributors;
     }
 
@@ -61,8 +69,12 @@ public class Producer {
     }
 
     public final void removeDisributor(final Distributor distributor) {
-        if (this.getDistributors() != null) {
-            this.getDistributors().remove(distributor);
+        if (this.getCurrentDistributors() != null) {
+            this.getCurrentDistributors().remove(distributor);
         }
+    }
+
+    public final void addCurrentDistributorsToArchive(int month) {
+        getDistributors().put(month - 1, getCurrentDistributors());
     }
 }

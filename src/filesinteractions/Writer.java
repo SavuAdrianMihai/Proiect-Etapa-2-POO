@@ -52,14 +52,13 @@ public class Writer {
             listMonthlyStats.add(mapMonthlyStats);
 */
             if (producer.getDistributors() != null) {
-                for (int i = 0; i < producer.getDistributors().size(); i++) {
+                for (int i = 0; i < input.getNumberOfTurns(); i++) {
                     LinkedHashMap<String, Object> mapMonthlyStats = new LinkedHashMap<>();
-                    printEntities.printMonthlyStats(producer, mapMonthlyStats, i);
+                    printEntities.printMonthlyStats(producer, mapMonthlyStats, i + 1);
                     listMonthlyStats.add(mapMonthlyStats);
                 }
             }
-            mapProducers.put("monthlyStats", listMonthlyStats );
-
+            mapProducers.put("monthlyStats", listMonthlyStats);
             listProducers.add(mapProducers);
         }
         mapFile.put("energyProducers", listProducers);

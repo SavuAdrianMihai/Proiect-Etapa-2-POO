@@ -4,7 +4,8 @@ public final class ConsumerFactory {
 
     private static ConsumerFactory instance = null;
 
-    private ConsumerFactory() { }
+    private ConsumerFactory() {
+    }
 
     /**
      * Singleton getInstance Method

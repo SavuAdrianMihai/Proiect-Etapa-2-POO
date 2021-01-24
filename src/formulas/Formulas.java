@@ -49,9 +49,9 @@ public class Formulas {
     /**
      * Method that calculates the cost of a @param distributor based on producer's costs
      */
-    public long cost(final Distributor distributor){
+    public long cost(final Distributor distributor) {
         long sum = 0;
-        for(int i = 0; i < distributor.getProducers().size(); i++) {
+        for (int i = 0; i < distributor.getProducers().size(); i++) {
             sum += distributor.getProducers().get(i).getEnergyPerDistributor() *
                     distributor.getProducers().get(i).getPriceKW();
         }

@@ -5,7 +5,8 @@ import strategies.EnergyChoiceStrategyType;
 public final class DistributorFactory {
     private static DistributorFactory instance = null;
 
-    private DistributorFactory() { }
+    private DistributorFactory() {
+    }
 
     /**
      * Singleton getInstance Method
@@ -24,7 +25,7 @@ public final class DistributorFactory {
                                          final long initialBudget,
                                          final long initialInfrastructureCost,
                                          final long energyNeededKW, EnergyChoiceStrategyType
-                                         producerStrategy) {
+                                                 producerStrategy) {
         return new Distributor(id, contractLength, initialBudget, initialInfrastructureCost,
                 energyNeededKW, producerStrategy);
     }

@@ -1,9 +1,12 @@
 import fileio.Consumer;
 import fileio.Distributor;
+import fileio.Producer;
 import filesinteractions.Input;
 import filesinteractions.InputLoader;
 import filesinteractions.Writer;
+import formulas.Formulas;
 import sorts.DistributorSorts;
+import sorts.ProducerSorts;
 import updates.MonthlyUpdates;
 
 /**
@@ -13,7 +16,8 @@ public final class Main {
     /**
      * for coding style
      */
-    private Main() { }
+    private Main() {
+    }
 
     /**
      * Main function which reads the input file and starts simulation
@@ -22,14 +26,23 @@ public final class Main {
      * @throws Exception might error when reading/writing/opening files, parsing JSON
      */
     public static void main(final String[] args) throws Exception {
-        //String inputFilePath = args[0];
+        String inputFilePath = args[0];
 
-        String inputFilePath = "checker/resources/in/basic_1.json";
+        //String inputFilePath = "checker/resources/in/basic_3.json";
         InputLoader inputLoader = new InputLoader(inputFilePath);
 
         Input input = inputLoader.readData();
 
         // Initial round
+
+        // Distributor's action in the initial round
+        for (Distributor distributor : input.getDistributorsData()) {
+            distributor.searchProducer(input);
+            Formulas formulas = new Formulas();
+            distributor.setInitialProductionCost(formulas.productionCost(distributor));
+            distributor.setContractCost(formulas.finalContractPrice(distributor));
+            distributor.setPreviousNumberOfConsumers(distributor.getConsumers().size());
+        }
 
         // Consumer's action in the initial round
         for (Consumer consumer : input.getConsumersData()) {
@@ -38,19 +51,14 @@ public final class Main {
             consumer.payBills();
         }
 
-        // Distributor's action in the initial round
         for (Distributor distributor : input.getDistributorsData()) {
-            distributor.searchProducer(input);
-            distributor.setPreviousNumberOfConsumers(distributor.getConsumers().size());
             distributor.addIncomeToBudget();
             distributor.payBills();
         }
 
-        /*
         for (Producer producer : input.getProducersData()) {
-
+            producer.addCurrentDistributorsToArchive(1);
         }
-         */
 
         // iterate through rounds
         for (int i = 0; i < input.getNumberOfTurns(); i++) {
@@ -63,11 +71,6 @@ public final class Main {
                 distributor.changeCost(update.getCostsChanges());
             }
 
-            /*
-            for (Producer producer : input.getProducersData()) {
-
-            }
-*/
             // adding new consumers to the simulation
             if (update.getNewConsumers() != null) {
                 for (Consumer newConsumer : update.getNewConsumers()) {
@@ -90,15 +93,21 @@ public final class Main {
                 distributor.addIncomeToBudget();
                 distributor.payBills();
             }
+
+            for (Producer producer : input.getProducersData()) {
+                producer.addCurrentDistributorsToArchive(i + 2);
+            }
         }
 
-        // sort distributors by their id
+        // sort distributors & producers by their id
         DistributorSorts distribuitorSorts = new DistributorSorts();
+        ProducerSorts producerSorts = new ProducerSorts();
         distribuitorSorts.sortDistributorsById(input);
+        producerSorts.sortProducersById(input);
 
         // write in output file
-        //String outputFilePath = args[1];
-        String outputFilePath = "results.out";
+        String outputFilePath = args[1];
+        //String outputFilePath = "results.out";
         Writer writer = new Writer();
         writer.writeFile(outputFilePath, input);
     }

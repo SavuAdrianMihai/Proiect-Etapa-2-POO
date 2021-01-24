@@ -77,7 +77,7 @@ public final class InputLoader {
                 }
             }
 
-            if(jsonProducers != null) {
+            if (jsonProducers != null) {
                 for (Object jsonProducer : jsonProducers) {
                     producers.add(new Producer(((long) ((JSONObject) jsonProducer).get("id")),
                             EnergyType.valueOf(((JSONObject) jsonProducer).
